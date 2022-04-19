@@ -6,8 +6,15 @@ Feature: Criar usuários
     Background: Base Url
         Given url "http://crud-api-academy.herokuapp.com/api/v1/users"
          * def email = java.util.UUID.randomUUID() + "@teste.com";
-        
-    Scenario: Deve ser possível cadastrar um novo usuário e gerar um erro se tentar cadastrar o mesmo usuário novamente
+
+
+    Scenario: Deve ser possível cadastrar um novo usuário
+        And request { name: "Kamilly", email: "#(email)" }
+        When method post 
+        Then status 201
+        And match response contains {name: "Kamilly", email: "#(email)"}
+
+    Scenario: Deve gerar um erro se tentar cadastrar usuário com o mesmo email
         And request { name: "Kamilly", email: "#(email)" }
         When method post 
         Then status 201

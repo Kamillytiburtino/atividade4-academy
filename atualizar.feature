@@ -21,12 +21,13 @@ Feature: Atulizar usuário
         Then status 200
         And match response contains payloadUpdate
 
-    Scenario: Deve apresentar o erro 400 caso as informações não sejam válidas
+    Scenario: Deve apresentar o erro 400 caso o email não seja válido
         Given path userId
         And request { name: "Kamilly", email: " " }
         When method put 
         Then status 400
         
+    Scenario: Deve apresentar o erro 400 caso o nome não seja válido
         Given path userId
         Given request { name: "", email: "#(email)" }
         When method put 
