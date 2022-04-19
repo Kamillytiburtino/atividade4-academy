@@ -15,3 +15,14 @@ Feature: Remover um usuário
         Given path userId
         When method delete
         Then status 204
+
+    # Está retornando 204 quando passo um ID inexistente
+    Scenario: Deve retornar um erro 400 quando o Id não existir
+        Given path java.util.UUID.randomUUID();
+        When method delete
+        Then status 400
+
+    Scenario: Deve retornar um erro 400 quando o Id for invalido
+        Given path '12345'
+        When method delete
+        Then status 400

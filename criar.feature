@@ -5,12 +5,24 @@ Feature: Criar usuários
 
     Background: Base Url
         Given url "http://crud-api-academy.herokuapp.com/api/v1/users"
+         * def email = java.util.UUID.randomUUID() + "@teste.com";
         
-        
-    Scenario: Deve ser possível cadastrar um novo usuário
-        * def email = "abacate@teste.com"+ "Bella"
-
+    Scenario: Deve ser possível cadastrar um novo usuário e gerar um erro se tentar cadastrar o mesmo usuário novamente
         And request { name: "Kamilly", email: "#(email)" }
         When method post 
         Then status 201
-        And match response contains {name: 'Luzia', email: "Luzia@gmail.com"}
+        And match response contains {name: "Kamilly", email: "#(email)"}
+
+        And request { name: "Kamilly", email: "#(email)" }
+        When method post 
+        Then status 422
+        And match response contains {error: "User already exists."}
+
+     Scenario: Deve apresentar o erro 400 caso as informações não sejam válidas
+        Given request { name: "Kamilly", email: " " }
+        When method post 
+        Then status 400
+        # Esta criando usuário com nome em branco, considerando espaços.
+        Given request { name: "  ", email: "#(email)" }
+        When method post 
+        Then status 400

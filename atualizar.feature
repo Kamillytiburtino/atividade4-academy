@@ -5,12 +5,47 @@ Feature: Atulizar usuário
 
     Background: Base Url
         Given url "http://crud-api-academy.herokuapp.com/api/v1/users"
-        * def userId = "c68775e4-a1fd-455a-bcba-bb7e77e736b5"
-        * def payloadUpdate = {name: "Luzia Lima", email: "Luzialima00@gmail.com"}
+        * def email =  java.util.UUID.randomUUID() + "@teste.com";
+
+        * def payloadUpdate = {name: "Luzia Lima", email: "#(email)"}
+        * def payload = { name: 'Maria', email: "#(email)" }
+        Given request payload
+        When method post 
+        Then status 201
+        * def userId = response.id
 
     Scenario: Deve ser possível atualizar o usuário cadastrado
         Given path userId
-        And request payloadUpdate
+        And request  payloadUpdate
         When method put
         Then status 200
         And match response contains payloadUpdate
+
+    Scenario: Deve apresentar o erro 400 caso as informações não sejam válidas
+        Given path userId
+        And request { name: "Kamilly", email: " " }
+        When method put 
+        Then status 400
+        
+        Given path userId
+        Given request { name: "", email: "#(email)" }
+        When method put 
+        Then status 400
+
+    Scenario: Deve retornar um erro 404 quando o Id não existir
+        Given path java.util.UUID.randomUUID();
+        And request payloadUpdate
+        When method put
+        Then status 404
+
+    Scenario: Deve retornar erro 422 quando o email já estiver cadastrado
+        * def newEmail = java.util.UUID.randomUUID() + "@teste.com"
+        Given request { name: "Maria", email: "#(newEmail)"  }
+        When method post 
+        Then status 201
+        * def id = response.id
+
+        Given path id
+        And request { name: "test", email: "#(email)" } 
+        When method put 
+        Then status 422

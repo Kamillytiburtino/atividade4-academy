@@ -5,7 +5,8 @@ Feature: Encontrar Usuário
 
     Background: Base Url
         Given url "http://crud-api-academy.herokuapp.com/api/v1/users"
-        * def payload = { name: 'Maria', email: "maria0@gmail.com" }
+        * def email = java.util.UUID.randomUUID() + "@teste.com";
+        * def payload = { name: 'Maria', email: "#(email)" }
      
     Scenario: Deve ser possível criar um usuário e encontrar o usuário pelo Id criado
         Given request payload
@@ -17,3 +18,13 @@ Feature: Encontrar Usuário
         When method get
         Then status 200
         And match response contains payload
+
+    Scenario: Deve retornar um erro 400 quando o Id for incorreto
+        Given path "123456"
+        When method get
+        Then status 400
+
+    Scenario: Deve retornar um erro 404 quando o Id não existir
+        Given path java.util.UUID.randomUUID();
+        When method get
+        Then status 404
